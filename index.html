@@ -30,7 +30,7 @@ function extractSteps(text){
  const chunks=segmented.split(/(?:[.!?]+\s+|;\s*|\n+|,?\s+and\s+then\s+|(?<!\bwho),?\s+then\s+|\s+after\s+that\s+|\s+\|\s+)/i)
   .map(x=>x.trim().replace(/^[,;:\s]+|[,;:\s]+$/g,'')).filter(x=>x.length>=8);
  const actors='front-of-house staff|property managers?|account managers?|admin staff|kitchen staff|field workers?|closing staff|sales team|receiving team|product team|team members?|different agents?|payroll|dispatchers?|supervisors?|technicians?|engineers?|candidates?|visitors?|homeowners?|buyers?|sellers?|users?|leads?|customers?|clients?|guests?|patients?|staff|employees?|managers?|teams?|agents?|receptionists?|reception|owners?|suppliers?|contractors?|kitchen|chefs?|cooks?|servers?|drivers?|administrators?|admins?|applicants?|founders?|brokers?|tenants?|landlords?|systems?|software|we|i';
- const actorPattern=new RegExp('^(?:the\\s+|a\\s+|an\\s+)?('+actors+')\\b','i');
+ const actorPattern=new RegExp('^(?:(?:the|a|an|one|new|different|past)\\s+)?('+actors+')\\b','i');
  const implied=/^(?:(?:manually|sometimes)\s+)?(?:count|check|text|send|sends|email|emails|call|calls|transfer|enter|copy|forward|review|approve|wait|chase|confirm|update|record|create|repeat|book|order|receive|return|returns|seek|repeating|checking|waiting|sending|transferring|copying|forwarding|manually)\b/i;
  let lastActor=null;
  return (chunks.length?chunks:[cleaned]).slice(0,8).map(raw=>{
