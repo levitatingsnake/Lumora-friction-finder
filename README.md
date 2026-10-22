@@ -57,6 +57,8 @@ The project deliberately uses an inspectable rules engine. It is an exercise in 
 - Priority is a heuristic, not a calculation of actual financial impact.
 - No sensitive organisational or customer information should be entered into a public demonstration without appropriate authorisation.
 
+See [the release review and manual test checklist](RELEASE_REVIEW.md) for the latest QA evidence.
+
 ## Next validation steps
 
 - Walk through every result tab and control on mobile Safari and desktop browsers.
