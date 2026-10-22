@@ -36,7 +36,7 @@ function extractSteps(text){
   const found=sentence.match(actorPattern);
   let actor=found?found[1]:null;
   if(actor)lastActor=actor;
-  else if(new RegExp('^(?:'+action+')\\b','i').test(sentence))actor=lastActor;
+  else if(new RegExp('^(?:(?:manually|sometimes)\\s+)?(?:'+action+'|repeating|checking|waiting|sending|transferring|copying|forwarding)\\b','i').test(sentence))actor=lastActor;
   const wait=/\b(wait|waiting|pending|delay|chase|follow.?up|approval|sign.?off|unclear)\b/i.test(sentence);
   const transfer=/\b(send|sends|forward|email|emails|pass|hand.?off|transfer|share|notify|copies|text|texts)\b/i.test(sentence);
   sentence=sentence.charAt(0).toUpperCase()+sentence.slice(1);
