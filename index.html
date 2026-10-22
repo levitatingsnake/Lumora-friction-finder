@@ -197,7 +197,8 @@ function adviceForContext(t){
  if(has('complaint'))drop.add('lead');
  if(/\b(?:new client|new customer|intake)\b/i.test(t)&&/\b(?:same information|same details|separate form)\b/i.test(t))drop.add('booking');
  if(/\b(?:inspection|field workers|job sheets)\b/i.test(t))drop.add('invoice');
- if(/\b(?:new client|new customer|intake)\b/i.test(t)&&!has('intake')){const p=byKey('intake');if(p)all.unshift(p)}
+ if(/\b(?:field workers|job sheets|field team reporting)\b/i.test(t)&&!has('report')){const p=byKey('report');if(p)all.unshift(p)}
+ if(/\b(?:new client|new customer|intake|clients phone or email for help)\b/i.test(t)&&!has('intake')){const p=byKey('intake');if(p)all.unshift(p)}
  if(/\b(?:complaint|complaints|raise issues|repeat their story)\b/i.test(t)&&!has('complaint')){const p=byKey('complaint');if(p)all.unshift(p)}
  if(/\bmenu item\b/i.test(t))drop.add('booking');
  if(/\brenewal dates?\b/i.test(t))drop.add('lead');
