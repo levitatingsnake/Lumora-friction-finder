@@ -35,8 +35,9 @@ function extractSteps(text){
  let lastActor=null;
  return (chunks.length?chunks:[cleaned]).slice(0,8).map(raw=>{
   let sentence=raw.replace(/^(?:and|so|next|finally|then)\s+/i,'').trim();
-  const found=sentence.match(actorPattern);
+  const found=/^(?:buyer enquiries|customer jobs|customer enquiries|staff requests)\b/i.test(sentence)?null:sentence.match(actorPattern);
   let actor=found?found[1]:null;
+  if(!actor){const nested=sentence.match(/^(?:a|an|the)\s+new\s+(customer|client|employee|applicant)\b/i);if(nested)actor=nested[1];}
   if(actor)lastActor=actor;
   else if(implied.test(sentence))actor=lastActor;
   const wait=/\b(wait|waiting|pending|delay|chase|follow.?up|approval|sign.?off|unclear)\b/i.test(sentence);
