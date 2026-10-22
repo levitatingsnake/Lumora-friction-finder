@@ -24,7 +24,7 @@ const $=id=>document.getElementById(id);let hits=[],active='map',source='',steps
 function extractSteps(text){
  const cleaned=text.replace(/\r/g,' ').replace(/[ \t]+/g,' ').trim();
  const action='(?:count|counts|check|checks|text|texts|send|sends|email|emails|call|calls|transfer|transfers|enter|enters|copy|copies|forward|forwards|review|reviews|approve|approves|wait|waits|chase|chases|confirm|confirms|update|updates|record|records|create|creates|repeat|repeats|book|books|order|orders|manually\s+\w+|sometimes\s+\w+)';
- const splitActions=new RegExp(',?\s+(?:and\s+)?(?='+action+'\\b)','gi');
+ const splitActions=new RegExp(String.raw`,?\s+(?:and\s+)?(?=${action}\b)`,'gi');
  const chunks=cleaned.replace(splitActions,' | ').split(/(?:[.!?]+\s+|;\s*|\n+|,?\s+and\s+then\s+|,?\s+then\s+|\s+after\s+that\s+|\s+\|\s+)/i)
  .map(x=>x.trim().replace(/^[,;:\s]+|[,;:\s]+$/g,'')).filter(x=>x.length>=8);
  const actors='customers?|clients?|guests?|patients?|staff|employees?|managers?|teams?|agents?|receptionists?|reception|owners?|suppliers?|contractors?|kitchen|chefs?|cooks?|servers?|drivers?|administrators?|admins?|applicants?|founders?|brokers?|tenants?|landlords?|systems?|software|we|i';
