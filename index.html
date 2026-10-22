@@ -23,9 +23,10 @@ const collections={"General":[["New customer onboarding","A new customer emails 
 const $=id=>document.getElementById(id);let hits=[],active='map',source='',steps=[];const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function extractSteps(text){
  const cleaned=text.replace(/\r/g,' ').replace(/[ \t]+/g,' ').trim();
- const action='(?:count|counts|check|checks|text|texts|send|sends|email|emails|call|calls|transfer|transfers|enter|enters|copy|copies|forward|forwards|review|reviews|approve|approves|wait|waits|chase|chases|confirm|confirms|update|updates|record|records|create|creates|repeat|repeats|book|books|order|orders|manually\s+\w+|sometimes\s+\w+)';
- const splitActions=new RegExp(String.raw`,?\s+(?:and\s+)?(?=${action}\b)`,'gi');
- const chunks=cleaned.replace(splitActions,' | ').split(/(?:[.!?]+\s+|;\s*|\n+|,?\s+and\s+then\s+|,?\s+then\s+|\s+after\s+that\s+|\s+\|\s+)/i)
+ const action='(?:count|check|text|send|email|call|transfer|enter|copy|forward|review|approve|wait|chase|confirm|update|record|create|repeat|book|order)(?:s|es)?';
+ const splitActions=/,\s*(?=(?:sometimes\s+)?(?:repeating|checking|waiting|texting|sending|transferring|entering|copying|forwarding|reviewing|approving|chasing|confirming|updating|recording|creating|booking|ordering|manually\s+\w+|text\b|send\b|transfer\b|copy\b|check\b|wait\b))/gi;
+ const segmented=cleaned.replace(splitActions,' | ').replace(/\s+and\s+(?=(?:manually\s+)?(?:text|send|transfer|copy|check|wait|email|forward|review|approve|confirm|update|record|book)\b)/gi,' | ');
+ const chunks=segmented.split(/(?:[.!?]+\s+|;\s*|\n+|,?\s+and\s+then\s+|,?\s+then\s+|\s+after\s+that\s+|\s+\|\s+)/i)
  .map(x=>x.trim().replace(/^[,;:\s]+|[,;:\s]+$/g,'')).filter(x=>x.length>=8);
  const actors='customers?|clients?|guests?|patients?|staff|employees?|managers?|teams?|agents?|receptionists?|reception|owners?|suppliers?|contractors?|kitchen|chefs?|cooks?|servers?|drivers?|administrators?|admins?|applicants?|founders?|brokers?|tenants?|landlords?|systems?|software|we|i';
  const actorPattern=new RegExp('^(?:the\\s+|a\\s+|an\\s+)?('+actors+')\\b','i');
