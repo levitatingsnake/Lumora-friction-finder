@@ -163,7 +163,39 @@ function chooseAdvice(t){
  }
  return selected;
 }
-function analyze(){source=$('process').value.trim();if(source.length<25){hits=[];steps=[];active='map';document.querySelectorAll('.tab').forEach(b=>{const selected=b.dataset.tab==='map';b.classList.toggle('active',selected);b.setAttribute('aria-selected',String(selected))});$('results').innerHTML='<div class="warning">Please describe the process in a little more detail (at least 25 characters).</div>';return}steps=extractSteps(source);const contextual=chooseAdvice(source);const generic=rules.filter(r=>r.pattern.test(source));hits=[...contextual,...generic.filter(r=>!contextual.some(c=>
+function adviceForContext(t){
+ const selected=chooseAdvice(t);
+ const additions=[];
+ const contains=(re)=>re.test(t);
+ const byKey=key=>adviceProfiles.find(p=>p.key===key);
+ // Prefer the actual workflow over incidental words such as "booking notes" or "report broken equipment".
+ const strong=[
+  ['maintenance',/\b(?:maintenance|repairs?|broken equipment|contractors?)\b/i],
+  ['complaint',/\b(?:complaints?|complaining|complained|escalation)\b/i],
+  ['invoice',/\b(?:invoices?|billing|overdue accounts|payment status)\b/i],
+  ['approval',/\b(?:leave requests?|price change|manager sign.off|vendor approval)\b/i],
+  ['intake',/\b(?:new client|new customer|signup|onboard|new hires?)\b/i],
+  ['documents',/\b(?:paper forms?|documents?|files?|listing portals)\b/i],
+  ['report',/\b(?:vendor report|inspection report|field team reporting|reporting|investor update)\b/i],
+  ['lead',/\b(?:lead qualification|buyer enquiries?|open home|trial.to.paid)\b/i],
+  ['handoff',/\b(?:forward(?:ed|s|ing)?|referrals?|handoffs?)\b/i]
+ ];
+ for(const [key,re] of strong)if(contains(re)&&!selected.some(p=>p.key===key)){const p=byKey(key);if(p)additions.push(p)}
+ const all=[...selected,...additions];
+ const drop=new Set();
+ const has=key=>all.some(p=>p.key===key);
+ if(has('maintenance'))['booking','report','quote'].forEach(k=>drop.add(k));
+ if(has('invoice'))drop.add('roster');
+ if(has('complaint'))drop.add('lead');
+ if(has('intake')&&/\b(?:same information|same details|separate form)\b/i.test(t))drop.add('booking');
+ if(has('report')&&/\b(?:inspection|field workers|job sheets)\b/i.test(t))drop.add('invoice');
+ if(/\bmenu item\b/i.test(t))drop.add('booking');
+ if(/\brenewal dates?\b/i.test(t))drop.add('lead');
+ if(/\bprice change\b/i.test(t))drop.add('transaction');
+ const order=['allergy','maintenance','complaint','invoice','approval','intake','application','quote','stock','kitchen','dispatch','scheduling','booking','report','documents','transaction','checklist','investor','experiment','contact','status','handoff','lead','roster'];
+ return all.filter(p=>!drop.has(p.key)).sort((a,b)=>order.indexOf(a.key)-order.indexOf(b.key)).slice(0,3);
+}
+function analyze(){source=$('process').value.trim();if(source.length<25){hits=[];steps=[];active='map';document.querySelectorAll('.tab').forEach(b=>{const selected=b.dataset.tab==='map';b.classList.toggle('active',selected);b.setAttribute('aria-selected',String(selected))});$('results').innerHTML='<div class="warning">Please describe the process in a little more detail (at least 25 characters).</div>';return}steps=extractSteps(source);const contextual=adviceForContext(source);const generic=rules.filter(r=>r.pattern.test(source));hits=[...contextual,...generic.filter(r=>!contextual.some(c=>
  (['handoff','dispatch','kitchen'].includes(c.key)&&r.name==='Manual transfer')||
  (['intake','documents','contact','application'].includes(c.key)&&r.name==='Repeated information')||
  (['booking','scheduling','stock'].includes(c.key)&&r.name==='Channel switching')||
