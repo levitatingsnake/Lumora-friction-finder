@@ -48,6 +48,8 @@ function extractSteps(text){
  });
 }
 const interventionPlans={
+menu:{owner:"Kitchen lead and service manager",first:"Choose the next menu change and list every customer-facing place it appears.",metric:"Channels updated correctly before service",decision:"Keep if all channels agree and dietary information is verified"},
+renewal:{owner:"Account manager",first:"Review the next ten renewal dates and assign a named follow-up owner.",metric:"Renewals with an owner and timely contact",decision:"Keep if missed follow-ups fall without contacting customers unnecessarily"},
 approval:{owner:"Team manager",first:"Track five requests and identify where decisions stall.",metric:"Time from request to decision",decision:"Continue if waits fall without skipping required checks"},
 quote:{owner:"Sales or estimating lead",first:"Review five quotes for missing information before pricing starts.",metric:"Time to send a complete quote",decision:"Keep if quote errors do not rise"},
 lead:{owner:"Customer contact lead",first:"Review ten enquiries and check the next agreed contact.",metric:"Enquiries with no next action",decision:"Keep if fewer enquiries are lost"},
@@ -82,6 +84,8 @@ const genericPlans={
 };
 function planFor(r){return interventionPlans[r.key]||genericPlans[r.name]||{owner:'Process owner',first:'Observe one real case and record each handoff and wait.',metric:'Avoidable handoffs and minutes delayed per case',decision:'Choose the smallest reversible change supported by observations.'}}
 const prioritySignals={
+menu:{tier:2,impact:"Inconsistent menu information can confuse guests and staff",effort:"Low: coordinate updates across channels",tradeoff:"Kitchen must verify ingredients and allergen details"},
+renewal:{tier:3,impact:"Missed renewal dates and customer contact",effort:"Low: maintain one owned register",tradeoff:"Respect customer preferences and contract notice periods"},
 approval:{tier:2,impact:"Requests stuck waiting for a decision",effort:"Low: clarify responsibility",tradeoff:"Keep necessary approvals"},
 quote:{tier:2,impact:"Slow quotes and lost enquiries",effort:"Low: agree required details",tradeoff:"Do not rush pricing checks"},
 lead:{tier:2,impact:"Missed enquiries and slow responses",effort:"Low: agree a follow-up owner",tradeoff:"Respect contact preferences"},
@@ -117,6 +121,8 @@ const genericPriority={
 function priorityFor(r){return prioritySignals[r.key]||genericPriority[r.name]||{tier:5,impact:'Unknown until observed',effort:'Low: observe and map first',tradeoff:'Do not assume a problem exists before validating it.'}}
 function rankFindings(items){return items.map((r,index)=>({...r,originalOrder:index,priority:priorityFor(r)})).sort((a,b)=>a.priority.tier-b.priority.tier||a.originalOrder-b.originalOrder)}
 const businessLenses={
+menu:{type:"Accuracy and service consistency",mechanism:"Different versions of a menu may cause mistakes and rework.",baseline:"Check the number of mismatched channels after each menu change.",caution:"Do not assume a cost saving; prioritise food safety."},
+renewal:{type:"Renewal reliability",mechanism:"Scattered renewal dates can lead to late contact and missed decisions.",baseline:"Count late renewal contacts and missing owners over one month.",caution:"Verify contractual notice requirements before changing reminders."},
 approval:{type:"Waiting time",mechanism:"Requests may sit idle between submission and a decision.",baseline:"Measure approval time and repeat enquiries.",caution:"Check actual results before claiming savings."},
 quote:{type:"Sales response time",mechanism:"Missing details delay quotes and increase back-and-forth.",baseline:"Measure quote turnaround and revisions.",caution:"Check actual results before claiming savings."},
 lead:{type:"Sales opportunities",mechanism:"Slow or missed follow-ups may lose interested customers.",baseline:"Track response time and unanswered enquiries.",caution:"Check actual results before claiming savings."},
@@ -191,6 +197,8 @@ function adviceForContext(t){
  if(has('complaint'))drop.add('lead');
  if(/\b(?:new client|new customer|intake)\b/i.test(t)&&/\b(?:same information|same details|separate form)\b/i.test(t))drop.add('booking');
  if(/\b(?:inspection|field workers|job sheets)\b/i.test(t))drop.add('invoice');
+ if(/\b(?:new client|new customer|intake)\b/i.test(t)&&!has('intake')){const p=byKey('intake');if(p)all.unshift(p)}
+ if(/\b(?:complaint|complaints|raise issues|repeat their story)\b/i.test(t)&&!has('complaint')){const p=byKey('complaint');if(p)all.unshift(p)}
  if(/\bmenu item\b/i.test(t))drop.add('booking');
  if(/\brenewal dates?\b/i.test(t))drop.add('lead');
  if(/\bprice change\b/i.test(t))drop.add('transaction');
